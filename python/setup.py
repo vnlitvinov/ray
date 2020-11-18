@@ -294,12 +294,18 @@ def build(build_python, build_java):
         logger.warning("Expected Bazel version {} but found {}".format(
             ".".join(map(str, SUPPORTED_BAZEL)), bazel_version_str))
 
+    root_dir = os.path.join(os.path.abspath(os.environ['SRC_DIR']), '..', 'bazel-root')
+    out_dir = os.path.join(os.path.abspath(os.environ['SRC_DIR']), '..', 'b-o')
+    for d in (root_dir, out_dir):
+        if not os.path.exists(d):
+            os.makedirs(d)
+
     bazel_targets = []
     bazel_targets += ["//:ray_pkg"] if build_python else []
     bazel_targets += ["//java:ray_java_pkg"] if build_java else []
     return bazel_invoke(
         subprocess.check_call,
-        ["build", "--verbose_failures", "--"] + bazel_targets,
+        ["--output_user_root=" + root_dir, "--output_base=" + out_dir, "build", "--verbose_failures", "--"] + bazel_targets,
         env=bazel_env)
 
 
