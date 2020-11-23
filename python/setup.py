@@ -225,6 +225,24 @@ def download_pickle5(pickle5_dir):
             finally:
                 wzf.close()
 
+def patch_isdir():
+    '''
+    Python on Windows is having hard times at telling if a symlink is
+    a directory - it can "guess" wrong at times, which bites when
+    finding packages. Replace with a fixed version which unwraps links first.
+    '''
+    orig_isdir = os.path.isdir
+    def fixed_isdir(path, debug=False):
+        orig_path = path
+        while os.path.islink(path):
+            try:
+                link = os.readlink(path)
+            except OSError as err:
+                break
+            path = os.path.abspath(os.path.join(os.path.dirname(path), link))
+        return orig_isdir(path)
+    os.path.isdir = fixed_isdir
+
 def replace_symlinks_with_junctions():
     _LINKS = {
         r'ray\new_dashboard': '../../dashboard',
@@ -263,6 +281,7 @@ def replace_symlinks_with_junctions():
             subprocess.check_call('MKLINK /J "{}" "{}"'.format(os.path.basename(link), target), shell=True, cwd=os.path.dirname(path))
 
 if is_native_windows_or_msys():
+    patch_isdir()
     replace_symlinks_with_junctions()
 
 def build(build_python, build_java):
