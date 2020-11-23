@@ -23,6 +23,10 @@
 #include <thread>
 #include <unordered_map>
 
+#ifdef _WIN32
+#include <process.h> // to ensure getpid() on Windows
+#endif
+
 // Boost forward-declarations (to avoid forcing slow header inclusions)
 namespace boost {
 
