@@ -128,31 +128,7 @@ extras["all"] = list(set(chain.from_iterable(extras.values())))
 # These are the main dependencies for users of ray. This list
 # should be carefully curated. If you change it, please reflect
 # the change in the matching section of requirements.txt
-install_requires = [
-    # TODO(alex) Pin the version once this PR is
-    # included in the stable release.
-    # https://github.com/aio-libs/aiohttp/pull/4556#issuecomment-679228562
-    "aiohttp",
-    "aiohttp_cors",
-    "aioredis",
-    "click >= 7.0",
-    "colorama",
-    "colorful",
-    "filelock",
-    "google",
-    "gpustat",
-    "grpcio >= 1.28.1",
-    "jsonschema",
-    "msgpack >= 1.0.0, < 2.0.0",
-    "numpy >= 1.16",
-    "protobuf >= 3.8.0",
-    "py-spy >= 0.2.0",
-    "pyyaml",
-    "requests",
-    "redis >= 3.3.2, < 3.5.0",
-    "opencensus",
-    "prometheus_client >= 0.7.1",
-]
+install_requires = [] # everything should be installed via conda build recipe
 
 
 def is_native_windows_or_msys():
@@ -522,7 +498,7 @@ setuptools.setup(
     # The BinaryDistribution argument triggers build_ext.
     distclass=BinaryDistribution,
     install_requires=install_requires,
-    setup_requires=["cython >= 0.29.14", "wheel"],
+    setup_requires=[], # all installed via conda build recipe
     extras_require=extras,
     entry_points={
         "console_scripts": [
